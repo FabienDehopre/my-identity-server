@@ -1,21 +1,21 @@
-﻿using IdentityServer4.Events;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Linq;
-using System.Threading.Tasks;
-using IdentityServer4.Validation;
-using System.Collections.Generic;
-using System;
-using MyIdentityServer4.InputModel;
-using MyIdentityServer4.ViewModels;
-using MyIdentityServer4.Options;
-
 namespace MyIdentityServer4.Controllers
 {
+    using IdentityServer4.Events;
+    using IdentityServer4.Models;
+    using IdentityServer4.Services;
+    using IdentityServer4.Extensions;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using IdentityServer4.Validation;
+    using System.Collections.Generic;
+    using System;
+    using MyIdentityServer4.InputModel;
+    using MyIdentityServer4.ViewModels;
+    using MyIdentityServer4.Options;
+
     /// <summary>
     /// This controller processes the consent UI
     /// </summary>
@@ -23,18 +23,18 @@ namespace MyIdentityServer4.Controllers
     [Authorize]
     public class ConsentController : Controller
     {
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IEventService _events;
-        private readonly ILogger<ConsentController> _logger;
+        private readonly IIdentityServerInteractionService interaction;
+        private readonly IEventService events;
+        private readonly ILogger<ConsentController> logger;
 
         public ConsentController(
             IIdentityServerInteractionService interaction,
             IEventService events,
             ILogger<ConsentController> logger)
         {
-            _interaction = interaction;
-            _events = events;
-            _logger = logger;
+            this.interaction = interaction;
+            this.events = events;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -45,13 +45,13 @@ namespace MyIdentityServer4.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string returnUrl)
         {
-            var vm = await BuildViewModelAsync(returnUrl);
+            var vm = await this.BuildViewModelAsync(returnUrl);
             if (vm != null)
             {
-                return View("Index", vm);
+                return this.View("Index", vm);
             }
 
-            return View("Error");
+            return this.View("Error");
         }
 
         /// <summary>
@@ -61,11 +61,11 @@ namespace MyIdentityServer4.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(ConsentInputModel model)
         {
-            var result = await ProcessConsent(model);
+            var result = await this.ProcessConsent(model);
 
             if (result.IsRedirect)
             {
-                var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+                var context = await this.interaction.GetAuthorizationContextAsync(model.ReturnUrl);
                 if (context?.IsNativeClient() == true)
                 {
                     // The client is native, so this change in how to
@@ -73,20 +73,20 @@ namespace MyIdentityServer4.Controllers
                     return this.LoadingPage("Redirect", result.RedirectUri);
                 }
 
-                return Redirect(result.RedirectUri);
+                return this.Redirect(result.RedirectUri);
             }
 
             if (result.HasValidationError)
             {
-                ModelState.AddModelError(string.Empty, result.ValidationError);
+                this.ModelState.AddModelError(string.Empty, result.ValidationError);
             }
 
             if (result.ShowView)
             {
-                return View("Index", result.ViewModel);
+                return this.View("Index", result.ViewModel);
             }
 
-            return View("Error");
+            return this.View("Error");
         }
 
         /*****************************************/
@@ -97,8 +97,11 @@ namespace MyIdentityServer4.Controllers
             var result = new ProcessConsentResult();
 
             // validate return url is still valid
-            var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
-            if (request == null) return result;
+            var request = await this.interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+            if (request == null)
+            {
+                return result;
+            }
 
             ConsentResponse grantedConsent = null;
 
@@ -108,7 +111,7 @@ namespace MyIdentityServer4.Controllers
                 grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
                 // emit event
-                await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
+                await this.events.RaiseAsync(new ConsentDeniedEvent(this.User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
             }
             // user clicked 'yes' - validate the data
             else if (model?.Button == "yes")
@@ -130,7 +133,7 @@ namespace MyIdentityServer4.Controllers
                     };
 
                     // emit event
-                    await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
+                    await this.events.RaiseAsync(new ConsentGrantedEvent(this.User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
                 }
                 else
                 {
@@ -145,7 +148,7 @@ namespace MyIdentityServer4.Controllers
             if (grantedConsent != null)
             {
                 // communicate outcome of consent back to identityserver
-                await _interaction.GrantConsentAsync(request, grantedConsent);
+                await this.interaction.GrantConsentAsync(request, grantedConsent);
 
                 // indicate that's it ok to redirect back to authorization endpoint
                 result.RedirectUri = model.ReturnUrl;
@@ -154,7 +157,7 @@ namespace MyIdentityServer4.Controllers
             else
             {
                 // we need to redisplay the consent UI
-                result.ViewModel = await BuildViewModelAsync(model.ReturnUrl, model);
+                result.ViewModel = await this.BuildViewModelAsync(model.ReturnUrl, model);
             }
 
             return result;
@@ -162,22 +165,20 @@ namespace MyIdentityServer4.Controllers
 
         private async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
         {
-            var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            var request = await this.interaction.GetAuthorizationContextAsync(returnUrl);
             if (request != null)
             {
-                return CreateConsentViewModel(model, returnUrl, request);
+                return this.CreateConsentViewModel(model, returnUrl, request);
             }
             else
             {
-                _logger.LogError("No consent request matching request: {0}", returnUrl);
+                logger.LogError("No consent request matching request: {0}", returnUrl);
             }
 
             return null;
         }
 
-        private ConsentViewModel CreateConsentViewModel(
-            ConsentInputModel model, string returnUrl,
-            AuthorizationRequest request)
+        private ConsentViewModel CreateConsentViewModel(ConsentInputModel model, string returnUrl, AuthorizationRequest request)
         {
             var vm = new ConsentViewModel
             {
@@ -193,7 +194,7 @@ namespace MyIdentityServer4.Controllers
                 AllowRememberConsent = request.Client.AllowRememberConsent
             };
 
-            vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
+            vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => this.CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
 
             var apiScopes = new List<ScopeViewModel>();
             foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
@@ -201,36 +202,33 @@ namespace MyIdentityServer4.Controllers
                 var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
                 if (apiScope != null)
                 {
-                    var scopeVm = CreateScopeViewModel(parsedScope, apiScope, vm.ScopesConsented.Contains(parsedScope.RawValue) || model == null);
+                    var scopeVm = this.CreateScopeViewModel(parsedScope, apiScope, vm.ScopesConsented.Contains(parsedScope.RawValue) || model == null);
                     apiScopes.Add(scopeVm);
                 }
             }
             if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
             {
-                apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
+                apiScopes.Add(this.GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
             }
             vm.ApiScopes = apiScopes;
 
             return vm;
         }
 
-        private ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check)
+        private ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check) => new ScopeViewModel
         {
-            return new ScopeViewModel
-            {
-                Value = identity.Name,
-                DisplayName = identity.DisplayName ?? identity.Name,
-                Description = identity.Description,
-                Emphasize = identity.Emphasize,
-                Required = identity.Required,
-                Checked = check || identity.Required
-            };
-        }
+            Value = identity.Name,
+            DisplayName = identity.DisplayName ?? identity.Name,
+            Description = identity.Description,
+            Emphasize = identity.Emphasize,
+            Required = identity.Required,
+            Checked = check || identity.Required
+        };
 
         public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
         {
             var displayName = apiScope.DisplayName ?? apiScope.Name;
-            if (!String.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
+            if (!string.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
             {
                 displayName += ":" + parsedScopeValue.ParsedParameter;
             }
@@ -246,16 +244,13 @@ namespace MyIdentityServer4.Controllers
             };
         }
 
-        private ScopeViewModel GetOfflineAccessScope(bool check)
+        private ScopeViewModel GetOfflineAccessScope(bool check) => new ScopeViewModel
         {
-            return new ScopeViewModel
-            {
-                Value = IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess,
-                DisplayName = ConsentOptions.OfflineAccessDisplayName,
-                Description = ConsentOptions.OfflineAccessDescription,
-                Emphasize = true,
-                Checked = check
-            };
-        }
+            Value = IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess,
+            DisplayName = ConsentOptions.OfflineAccessDisplayName,
+            Description = ConsentOptions.OfflineAccessDescription,
+            Emphasize = true,
+            Checked = check
+        };
     }
 }

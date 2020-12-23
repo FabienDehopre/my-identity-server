@@ -1,8 +1,8 @@
-﻿using MyIdentityServer4.InputModel;
-using System.Collections.Generic;
-
 namespace MyIdentityServer4.ViewModels
 {
+    using MyIdentityServer4.InputModel;
+    using System.Collections.Generic;
+
     public class ConsentViewModel : ConsentInputModel
     {
         public string ClientName { get; set; }

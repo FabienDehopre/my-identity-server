@@ -1,4 +1,4 @@
-﻿namespace MyIdentityServer4.InputModel
+namespace MyIdentityServer4.InputModel
 {
     public class LogoutInputModel
     {

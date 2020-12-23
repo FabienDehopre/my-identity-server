@@ -1,16 +1,16 @@
-﻿using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using IdentityServer4.Events;
-using IdentityServer4.Extensions;
-using MyIdentityServer4.ViewModels;
-
 namespace MyIdentityServer4.Controllers
 {
+    using IdentityServer4.Services;
+    using IdentityServer4.Stores;
+    using Microsoft.AspNetCore.Mvc;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+    using IdentityServer4.Events;
+    using IdentityServer4.Extensions;
+    using MyIdentityServer4.ViewModels;
+
     /// <summary>
     /// This sample controller allows a user to revoke grants given to clients
     /// </summary>
@@ -18,30 +18,27 @@ namespace MyIdentityServer4.Controllers
     [Authorize]
     public class GrantsController : Controller
     {
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IClientStore _clients;
-        private readonly IResourceStore _resources;
-        private readonly IEventService _events;
+        private readonly IIdentityServerInteractionService interaction;
+        private readonly IClientStore clients;
+        private readonly IResourceStore resources;
+        private readonly IEventService events;
 
         public GrantsController(IIdentityServerInteractionService interaction,
             IClientStore clients,
             IResourceStore resources,
             IEventService events)
         {
-            _interaction = interaction;
-            _clients = clients;
-            _resources = resources;
-            _events = events;
+            this.interaction = interaction;
+            this.clients = clients;
+            this.resources = resources;
+            this.events = events;
         }
 
         /// <summary>
         /// Show list of grants
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            return View("Index", await BuildViewModelAsync());
-        }
+        public async Task<IActionResult> Index() => this.View("Index", await this.BuildViewModelAsync());
 
         /// <summary>
         /// Handle postback to revoke a client
@@ -50,23 +47,23 @@ namespace MyIdentityServer4.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Revoke(string clientId)
         {
-            await _interaction.RevokeUserConsentAsync(clientId);
-            await _events.RaiseAsync(new GrantsRevokedEvent(User.GetSubjectId(), clientId));
+            await interaction.RevokeUserConsentAsync(clientId);
+            await this.events.RaiseAsync(new GrantsRevokedEvent(this.User.GetSubjectId(), clientId));
 
-            return RedirectToAction("Index");
+            return this.RedirectToAction("Index");
         }
 
         private async Task<GrantsViewModel> BuildViewModelAsync()
         {
-            var grants = await _interaction.GetAllUserGrantsAsync();
+            var grants = await this.interaction.GetAllUserGrantsAsync();
 
             var list = new List<GrantViewModel>();
             foreach (var grant in grants)
             {
-                var client = await _clients.FindClientByIdAsync(grant.ClientId);
+                var client = await this.clients.FindClientByIdAsync(grant.ClientId);
                 if (client != null)
                 {
-                    var resources = await _resources.FindResourcesByScopeAsync(grant.Scopes);
+                    var resources = await this.resources.FindResourcesByScopeAsync(grant.Scopes);
 
                     var item = new GrantViewModel()
                     {

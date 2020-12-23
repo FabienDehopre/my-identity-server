@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-
 namespace MyIdentityServer4.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Filters;
+
     public class SecurityHeadersAttribute : ActionFilterAttribute
     {
         public override void OnResultExecuting(ResultExecutingContext context)

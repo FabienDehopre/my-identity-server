@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
 namespace MyIdentityServer4.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+
     public class GrantsViewModel
     {
         public IEnumerable<GrantViewModel> Grants { get; set; }

@@ -1,39 +1,39 @@
-﻿using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using MyIdentityServer4.ViewModels;
-using System.Threading.Tasks;
-
 namespace MyIdentityServer4.Controllers
 {
+    using IdentityServer4.Services;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using MyIdentityServer4.ViewModels;
+    using System.Threading.Tasks;
+
     [SecurityHeaders]
     [AllowAnonymous]
     public class HomeController : Controller
     {
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IWebHostEnvironment _environment;
-        private readonly ILogger _logger;
+        private readonly IIdentityServerInteractionService interaction;
+        private readonly IWebHostEnvironment environment;
+        private readonly ILogger<HomeController> logger;
 
         public HomeController(IIdentityServerInteractionService interaction, IWebHostEnvironment environment, ILogger<HomeController> logger)
         {
-            _interaction = interaction;
-            _environment = environment;
-            _logger = logger;
+            this.interaction = interaction;
+            this.environment = environment;
+            this.logger = logger;
         }
 
         public IActionResult Index()
         {
-            if (_environment.IsDevelopment())
+            if (this.environment.IsDevelopment())
             {
                 // only show in development
-                return View();
+                return this.View();
             }
 
-            _logger.LogInformation("Homepage is disabled in production. Returning 404.");
-            return NotFound();
+            this.logger.LogInformation("Homepage is disabled in production. Returning 404.");
+            return this.NotFound();
         }
 
         /// <summary>
@@ -44,19 +44,19 @@ namespace MyIdentityServer4.Controllers
             var vm = new ErrorViewModel();
 
             // retrieve error details from identityserver
-            var message = await _interaction.GetErrorContextAsync(errorId);
+            var message = await this.interaction.GetErrorContextAsync(errorId);
             if (message != null)
             {
                 vm.Error = message;
 
-                if (!_environment.IsDevelopment())
+                if (!this.environment.IsDevelopment())
                 {
                     // only show in development
                     message.ErrorDescription = null;
                 }
             }
 
-            return View("Error", vm);
+            return this.View("Error", vm);
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System;
-
 namespace MyIdentityServer4.Options
 {
+    using System;
+
     public class AccountOptions
     {
         public static bool AllowLocalLogin = true;

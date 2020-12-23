@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
 namespace MyIdentityServer4.InputModel
 {
+    using System.Collections.Generic;
+
     public class ConsentInputModel
     {
         public string Button { get; set; }

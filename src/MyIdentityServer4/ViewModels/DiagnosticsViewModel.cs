@@ -1,16 +1,16 @@
-﻿using IdentityModel;
-using Microsoft.AspNetCore.Authentication;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Text;
-
 namespace MyIdentityServer4.ViewModels
 {
+    using IdentityModel;
+    using Microsoft.AspNetCore.Authentication;
+    using Newtonsoft.Json;
+    using System.Collections.Generic;
+    using System.Text;
+
     public class DiagnosticsViewModel
     {
         public DiagnosticsViewModel(AuthenticateResult result)
         {
-            AuthenticateResult = result;
+            this.AuthenticateResult = result;
 
             if (result.Properties.Items.ContainsKey("client_list"))
             {
@@ -18,7 +18,7 @@ namespace MyIdentityServer4.ViewModels
                 var bytes = Base64Url.Decode(encoded);
                 var value = Encoding.UTF8.GetString(bytes);
 
-                Clients = JsonConvert.DeserializeObject<string[]>(value);
+                this.Clients = JsonConvert.DeserializeObject<string[]>(value);
             }
         }
 

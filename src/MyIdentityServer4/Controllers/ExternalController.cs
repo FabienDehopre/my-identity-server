@@ -1,33 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Events;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MyIdentityServer4.Models;
-
 namespace MyIdentityServer4.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using IdentityModel;
+    using IdentityServer4;
+    using IdentityServer4.Events;
+    using IdentityServer4.Services;
+    using IdentityServer4.Stores;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using MyIdentityServer4.Models;
+
     [SecurityHeaders]
     [AllowAnonymous]
     public class ExternalController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly IClientStore _clientStore;
-        private readonly IEventService _events;
-        private readonly ILogger<ExternalController> _logger;
+        private readonly UserManager<User> userManager;
+        private readonly SignInManager<User> signInManager;
+        private readonly IIdentityServerInteractionService interaction;
+        private readonly IClientStore clientStore;
+        private readonly IEventService events;
+        private readonly ILogger<ExternalController> logger;
 
         public ExternalController(
             UserManager<User> userManager,
@@ -37,12 +37,12 @@ namespace MyIdentityServer4.Controllers
             IEventService events,
             ILogger<ExternalController> logger)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _interaction = interaction;
-            _clientStore = clientStore;
-            _events = events;
-            _logger = logger;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.interaction = interaction;
+            this.clientStore = clientStore;
+            this.events = events;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -51,10 +51,13 @@ namespace MyIdentityServer4.Controllers
         [HttpGet]
         public IActionResult Challenge(string scheme, string returnUrl)
         {
-            if (string.IsNullOrEmpty(returnUrl)) returnUrl = "~/";
+            if (string.IsNullOrEmpty(returnUrl))
+            {
+                returnUrl = "~/";
+            }
 
             // validate returnUrl - either it is a valid OIDC URL or back to a local page
-            if (Url.IsLocalUrl(returnUrl) == false && _interaction.IsValidReturnUrl(returnUrl) == false)
+            if (this.Url.IsLocalUrl(returnUrl) == false && this.interaction.IsValidReturnUrl(returnUrl) == false)
             {
                 // user might have clicked on a malicious link - should be logged
                 throw new Exception("invalid return URL");
@@ -63,7 +66,7 @@ namespace MyIdentityServer4.Controllers
             // start challenge and roundtrip the return URL and scheme 
             var props = new AuthenticationProperties
             {
-                RedirectUri = Url.Action(nameof(Callback)),
+                RedirectUri = this.Url.Action(nameof(Callback)),
                 Items =
                 {
                     { "returnUrl", returnUrl },
@@ -71,7 +74,7 @@ namespace MyIdentityServer4.Controllers
                 }
             };
 
-            return Challenge(props, scheme);
+            return this.Challenge(props, scheme);
 
         }
 
@@ -82,26 +85,26 @@ namespace MyIdentityServer4.Controllers
         public async Task<IActionResult> Callback()
         {
             // read external identity from the temporary cookie
-            var result = await HttpContext.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+            var result = await this.HttpContext.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
             if (result?.Succeeded != true)
             {
                 throw new Exception("External authentication error");
             }
 
-            if (_logger.IsEnabled(LogLevel.Debug))
+            if (this.logger.IsEnabled(LogLevel.Debug))
             {
                 var externalClaims = result.Principal.Claims.Select(c => $"{c.Type}: {c.Value}");
-                _logger.LogDebug("External claims: {@claims}", externalClaims);
+                this.logger.LogDebug("External claims: {@claims}", externalClaims);
             }
 
             // lookup our user and external provider info
-            var (user, provider, providerUserId, claims) = await FindUserFromExternalProviderAsync(result);
+            var (user, provider, providerUserId, claims) = await this.FindUserFromExternalProviderAsync(result);
             if (user == null)
             {
                 // this might be where you might initiate a custom workflow for user registration
                 // in this sample we don't show how that would be done, as our sample implementation
                 // simply auto-provisions new external user
-                user = await AutoProvisionUserAsync(provider, providerUserId, claims);
+                user = await this.AutoProvisionUserAsync(provider, providerUserId, claims);
             }
 
             // this allows us to collect any additional claims or properties
@@ -109,12 +112,12 @@ namespace MyIdentityServer4.Controllers
             // this is typically used to store data needed for signout from those protocols.
             var additionalLocalClaims = new List<Claim>();
             var localSignInProps = new AuthenticationProperties();
-            ProcessLoginCallback(result, additionalLocalClaims, localSignInProps);
+            this.ProcessLoginCallback(result, additionalLocalClaims, localSignInProps);
 
             // issue authentication cookie for user
             // we must issue the cookie maually, and can't use the SignInManager because
             // it doesn't expose an API to issue additional claims from the login workflow
-            var principal = await _signInManager.CreateUserPrincipalAsync(user);
+            var principal = await this.signInManager.CreateUserPrincipalAsync(user);
             additionalLocalClaims.AddRange(principal.Claims);
             var name = principal.FindFirst(JwtClaimTypes.Name)?.Value ?? user.Id;
 
@@ -125,17 +128,17 @@ namespace MyIdentityServer4.Controllers
                 AdditionalClaims = additionalLocalClaims
             };
 
-            await HttpContext.SignInAsync(isuser, localSignInProps);
+            await this.HttpContext.SignInAsync(isuser, localSignInProps);
 
             // delete temporary cookie used during external authentication
-            await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+            await this.HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
             // retrieve return URL
             var returnUrl = result.Properties.Items["returnUrl"] ?? "~/";
 
             // check if external login is in the context of an OIDC request
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.Id, name, true, context?.Client.ClientId));
+            var context = await this.interaction.GetAuthorizationContextAsync(returnUrl);
+            await this.events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.Id, name, true, context?.Client.ClientId));
 
             if (context != null)
             {
@@ -147,7 +150,7 @@ namespace MyIdentityServer4.Controllers
                 }
             }
 
-            return Redirect(returnUrl);
+            return this.Redirect(returnUrl);
         }
 
         private async Task<(User user, string provider, string providerUserId, IEnumerable<Claim> claims)>FindUserFromExternalProviderAsync(AuthenticateResult result)
@@ -169,7 +172,7 @@ namespace MyIdentityServer4.Controllers
             var providerUserId = userIdClaim.Value;
 
             // find external user
-            var user = await _userManager.FindByLoginAsync(provider, providerUserId);
+            var user = await this.userManager.FindByLoginAsync(provider, providerUserId);
 
             return (user, provider, providerUserId, claims);
         }
@@ -218,17 +221,26 @@ namespace MyIdentityServer4.Controllers
             {
                 UserName = Guid.NewGuid().ToString(),
             };
-            var identityResult = await _userManager.CreateAsync(user);
-            if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+            var identityResult = await this.userManager.CreateAsync(user);
+            if (!identityResult.Succeeded)
+            {
+                throw new Exception(identityResult.Errors.First().Description);
+            }
 
             if (filtered.Any())
             {
-                identityResult = await _userManager.AddClaimsAsync(user, filtered);
-                if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+                identityResult = await this.userManager.AddClaimsAsync(user, filtered);
+                if (!identityResult.Succeeded)
+                {
+                    throw new Exception(identityResult.Errors.First().Description);
+                }
             }
 
-            identityResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
-            if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+            identityResult = await this.userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
+            if (!identityResult.Succeeded)
+            {
+                throw new Exception(identityResult.Errors.First().Description);
+            }
 
             return user;
         }

@@ -1,7 +1,7 @@
-﻿using IdentityServer4.Models;
-
 namespace MyIdentityServer4.ViewModels
 {
+    using IdentityServer4.Models;
+
     public class ErrorViewModel
     {
         public ErrorViewModel()

@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
 namespace MyIdentityServer4.InputModel
 {
+    using System.ComponentModel.DataAnnotations;
+
     public class LoginInputModel
     {
         [Required]

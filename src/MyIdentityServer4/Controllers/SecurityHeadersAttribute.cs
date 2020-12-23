@@ -1,7 +1,10 @@
 namespace MyIdentityServer4.Controllers
 {
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
 
     public class SecurityHeadersAttribute : ActionFilterAttribute
     {
@@ -10,6 +13,8 @@ namespace MyIdentityServer4.Controllers
             var result = context.Result;
             if (result is ViewResult)
             {
+                var environment = context.HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
+
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
                 if (!context.HttpContext.Response.Headers.ContainsKey("X-Content-Type-Options"))
                 {
@@ -25,9 +30,15 @@ namespace MyIdentityServer4.Controllers
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
                 var csp = "default-src 'self'; object-src 'none'; frame-ancestors 'none'; sandbox allow-forms allow-same-origin allow-scripts; base-uri 'self';";
                 // also consider adding upgrade-insecure-requests once you have HTTPS in place for production
-                csp += "upgrade-insecure-requests;";
+                csp += " upgrade-insecure-requests;";
                 // also an example if you need client images to be displayed from twitter
                 // csp += "img-src 'self' https://pbs.twimg.com;";
+                if (environment.IsDevelopment())
+                {
+                    csp += "connect-src 'self' ws: wss:;";
+                }
+
+                // csp += " report-uri https://o241045.ingest.sentry.io/api/5414453/security/?sentry_key=9f464e79a2fc47d5ba1ca4d53f2ad4d5";
 
                 // once for standards compliant browsers
                 if (!context.HttpContext.Response.Headers.ContainsKey("Content-Security-Policy"))

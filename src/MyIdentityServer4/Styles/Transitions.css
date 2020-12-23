@@ -1,0 +1,23 @@
+.fade-enter {
+  @apply transition ease-out duration-100;
+}
+
+.fade-enter-start {
+  @apply transform opacity-0 scale-95;
+}
+
+.fade-enter-end {
+  @apply transform opacity-100 scale-100;
+}
+
+.fade-leave {
+  @apply transition ease-in duration-75;
+}
+
+.fade-leave-start {
+  @apply transform opacity-100 scale-100;
+}
+
+.fade-leave-end {
+  @apply transform opacity-0 scale-95;
+}

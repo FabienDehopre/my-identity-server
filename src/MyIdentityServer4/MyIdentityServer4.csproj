@@ -1,10 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>794c0035-3637-428c-9c03-0dd9222445d8</UserSecretsId>
     <!--<Nullable>enable</Nullable>-->
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="package-lock.json" />
+    <None Include="package.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.1" />

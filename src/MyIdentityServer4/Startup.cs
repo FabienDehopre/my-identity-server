@@ -5,8 +5,12 @@ namespace MyIdentityServer4
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Security.Claims;
     using System.Security.Cryptography;
+    using IdentityModel;
     using IdentityServer4;
+    using IdentityServer4.EntityFramework.DbContexts;
+    using IdentityServer4.EntityFramework.Mappers;
     using IdentityServer4.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -19,6 +23,8 @@ namespace MyIdentityServer4
     using MyIdentityServer4.Data;
     using MyIdentityServer4.Infrastructure;
     using MyIdentityServer4.Models;
+    using MyIdentityServer4.Settings;
+    using Serilog;
 
     public class Startup
     {
@@ -34,7 +40,7 @@ namespace MyIdentityServer4
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<UserStoreDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("UserStoreConnectionString")));
+            services.AddDbContext<UserStoreDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("UserStoreConnection")));
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserStoreDbContext>().AddDefaultTokenProviders();
             services.AddTransient<IEventSink, SentryEventSink>();
 
@@ -54,11 +60,11 @@ namespace MyIdentityServer4
                 .AddConfigurationStore(options =>
 #pragma warning restore IDE0053 // Use expression body for lambda expressions
                 {
-                    options.ConfigureDbContext = builder => builder.UseSqlServer(this.Configuration.GetConnectionString("ConfigurationStoreConnectionString"), sql => sql.MigrationsAssembly(migrationsAssembly));
+                    options.ConfigureDbContext = builder => builder.UseSqlServer(this.Configuration.GetConnectionString("ConfigurationStoreConnection"), sql => sql.MigrationsAssembly(migrationsAssembly));
                 })
                 .AddOperationalStore(options =>
                 {
-                    options.ConfigureDbContext = builder => builder.UseSqlServer(this.Configuration.GetConnectionString("OperationalStoreConnectionString"), sql => sql.MigrationsAssembly(migrationsAssembly));
+                    options.ConfigureDbContext = builder => builder.UseSqlServer(this.Configuration.GetConnectionString("OperationalStoreConnection"), sql => sql.MigrationsAssembly(migrationsAssembly));
                     options.EnableTokenCleanup = true;
                 })
                 .AddAspNetIdentity<User>();
@@ -79,16 +85,16 @@ namespace MyIdentityServer4
                 .AddGoogle(options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    var (ClientId, ClientSecret) = this.Configuration.GetSection("Authentication:Google").Get<(string ClientId, string ClientSecret)>();
-                    options.ClientId = ClientId;
-                    options.ClientSecret = ClientSecret;
+                    var settings = this.Configuration.GetSection("Authentication:Google").Get<ExternalAuthentication>();
+                    options.ClientId = settings.ClientId;
+                    options.ClientSecret = settings.ClientSecret;
                 })
                 .AddMicrosoftAccount(options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    var (ClientId, ClientSecret) = this.Configuration.GetSection("Authentication:Microsoft").Get<(string ClientId, string ClientSecret)>();
-                    options.ClientId = ClientId;
-                    options.ClientSecret = ClientSecret;
+                    var settings = this.Configuration.GetSection("Authentication:Microsoft").Get<ExternalAuthentication>();
+                    options.ClientId = settings.ClientId;
+                    options.ClientSecret = settings.ClientSecret;
                 });
 
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -96,23 +102,26 @@ namespace MyIdentityServer4
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            this.InitializeDatabase(app);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+            }
 
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();
-#pragma warning disable IDE0053 // Use expression body for lambda expressions
-            app.UseEndpoints(endpoints =>
-#pragma warning restore IDE0053 // Use expression body for lambda expressions
-            {
-                endpoints.MapDefaultControllerRoute();
-            });
+            app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
         }
 
         private ECDsaSecurityKey LoadECDsaSecurityKey(string keyId)
@@ -152,6 +161,135 @@ namespace MyIdentityServer4
             }
 
             return lines.Skip(1).SkipLast(1).ToArray();
+        }
+
+        private void InitializeDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+
+                var configurationDbContext = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                configurationDbContext.Database.Migrate();
+
+                if (!configurationDbContext.Clients.Any())
+                {
+                    Log.Debug("Clients being populated");
+                    foreach (var client in Config.Clients)
+                    {
+                        configurationDbContext.Clients.Add(client.ToEntity());
+                    }
+
+                    configurationDbContext.SaveChanges();
+                }
+                else
+                {
+                    Log.Debug("Clients already populated.");
+                }
+
+                if (!configurationDbContext.IdentityResources.Any())
+                {
+                    Log.Debug("IdentityResources being populated.");
+                    foreach (var resource in Config.IdentityResources)
+                    {
+                        configurationDbContext.IdentityResources.Add(resource.ToEntity());
+                    }
+
+                    configurationDbContext.SaveChanges();
+                }
+                else
+                {
+                    Log.Debug("IdentityResources already populated.");
+                }
+
+                if (!configurationDbContext.ApiScopes.Any())
+                {
+                    Log.Debug("ApiScopes being populated.");
+                    foreach (var scope in Config.ApiScopes)
+                    {
+                        configurationDbContext.ApiScopes.Add(scope.ToEntity());
+                    }
+
+                    configurationDbContext.SaveChanges();
+                }
+                else
+                {
+                    Log.Debug("ApiScopes already populated.");
+                }
+
+                var userStoreDbContext = serviceScope.ServiceProvider.GetRequiredService<UserStoreDbContext>();
+                userStoreDbContext.Database.Migrate();
+
+                var userMgr = serviceScope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                var alice = userMgr.FindByNameAsync("alice").Result;
+                if (alice == null)
+                {
+                    alice = new User
+                    {
+                        UserName = "alice",
+                        Email = "alice.smith@email.com",
+                        EmailConfirmed = true,
+                    };
+                    var result = userMgr.CreateAsync(alice, "Pass123$").Result;
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
+
+                    result = userMgr.AddClaimsAsync(alice, new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "Alice Smith"),
+                        new Claim(JwtClaimTypes.GivenName, "Alice"),
+                        new Claim(JwtClaimTypes.FamilyName, "Smith"),
+                        new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
+                    }).Result;
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
+
+                    Log.Debug("Alice created.");
+                }
+                else
+                {
+                    Log.Debug("Alice already exists");
+                }
+
+                var bob = userMgr.FindByNameAsync("bob").Result;
+                if (bob == null)
+                {
+                    bob = new User
+                    {
+                        UserName = "bob",
+                        Email = "bob.smith@email.com",
+                        EmailConfirmed = true,
+                    };
+                    var result = userMgr.CreateAsync(bob, "Pass123$").Result;
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
+
+                    result = userMgr.AddClaimsAsync(bob, new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, "Bob Smith"),
+                        new Claim(JwtClaimTypes.GivenName, "Bob"),
+                        new Claim(JwtClaimTypes.FamilyName, "Smith"),
+                        new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
+                        new Claim("location", "somewhere"),
+                    }).Result;
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception(result.Errors.First().Description);
+                    }
+
+                    Log.Debug("Bob created.");
+                }
+                else
+                {
+                    Log.Debug("Bob already exists");
+                }
+            }
         }
     }
 }

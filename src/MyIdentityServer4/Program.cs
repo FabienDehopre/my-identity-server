@@ -1,6 +1,7 @@
 namespace MyIdentityServer4
 {
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Serilog;
     using Serilog.Events;
@@ -50,9 +51,15 @@ namespace MyIdentityServer4
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .ConfigureWebHostDefaults(webBuilder =>
+                .ConfigureAppConfiguration((hostContext, builder) =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                });
+                    builder.AddJsonFile("appsettings.json");
+                    builder.AddEnvironmentVariables();
+                    if (hostContext.HostingEnvironment.IsDevelopment())
+                    {
+                        builder.AddUserSecrets<Program>();
+                    }
+                })
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
     }
 }

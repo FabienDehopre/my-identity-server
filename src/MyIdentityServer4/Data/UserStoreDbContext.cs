@@ -13,7 +13,9 @@ namespace MyIdentityServer4.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+#pragma warning disable IDE0022 // Use expression body for methods
             base.OnModelCreating(builder);
+#pragma warning restore IDE0022 // Use expression body for methods
         }
     }
 }

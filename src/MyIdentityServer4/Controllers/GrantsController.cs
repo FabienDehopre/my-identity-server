@@ -47,7 +47,7 @@ namespace MyIdentityServer4.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Revoke(string clientId)
         {
-            await interaction.RevokeUserConsentAsync(clientId);
+            await this.interaction.RevokeUserConsentAsync(clientId);
             await this.events.RaiseAsync(new GrantsRevokedEvent(this.User.GetSubjectId(), clientId));
 
             return this.RedirectToAction("Index");

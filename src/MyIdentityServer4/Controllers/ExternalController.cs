@@ -16,6 +16,7 @@ namespace MyIdentityServer4.Controllers
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using MyIdentityServer4.Infrastructure;
     using MyIdentityServer4.Models;
 
     [SecurityHeaders]

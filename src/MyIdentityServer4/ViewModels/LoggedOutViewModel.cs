@@ -1,4 +1,4 @@
-﻿namespace MyIdentityServer4.ViewModels
+namespace MyIdentityServer4.ViewModels
 {
     public class LoggedOutViewModel
     {
@@ -9,7 +9,7 @@
         public bool AutomaticRedirectAfterSignOut { get; set; }
 
         public string LogoutId { get; set; }
-        public bool TriggerExternalSignout => ExternalAuthenticationScheme != null;
+        public bool TriggerExternalSignout => this.ExternalAuthenticationScheme != null;
         public string ExternalAuthenticationScheme { get; set; }
     }
 }

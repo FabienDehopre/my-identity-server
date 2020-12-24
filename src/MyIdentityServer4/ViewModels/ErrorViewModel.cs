@@ -8,10 +8,7 @@ namespace MyIdentityServer4.ViewModels
         {
         }
 
-        public ErrorViewModel(string error)
-        {
-            Error = new ErrorMessage { Error = error };
-        }
+        public ErrorViewModel(string error) => this.Error = new ErrorMessage { Error = error };
 
         public ErrorMessage Error { get; set; }
     }

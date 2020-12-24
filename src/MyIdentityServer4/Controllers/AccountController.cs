@@ -11,6 +11,7 @@ namespace MyIdentityServer4.Controllers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using MyIdentityServer4.Infrastructure;
     using MyIdentityServer4.InputModel;
     using MyIdentityServer4.Models;
     using MyIdentityServer4.Options;

@@ -76,7 +76,10 @@ namespace MyIdentityServer4.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Callback(DeviceAuthorizationInputModel model)
         {
-            if (model == null) throw new ArgumentNullException(nameof(model));
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
 
             var result = await this.ProcessConsent(model);
             if (result.HasValidationError)

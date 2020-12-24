@@ -15,6 +15,7 @@ namespace MyIdentityServer4.Controllers
     using MyIdentityServer4.InputModel;
     using MyIdentityServer4.ViewModels;
     using MyIdentityServer4.Options;
+    using MyIdentityServer4.Infrastructure;
 
     /// <summary>
     /// This controller processes the consent UI
@@ -172,7 +173,7 @@ namespace MyIdentityServer4.Controllers
             }
             else
             {
-                logger.LogError("No consent request matching request: {0}", returnUrl);
+                this.logger.LogError("No consent request matching request: {0}", returnUrl);
             }
 
             return null;

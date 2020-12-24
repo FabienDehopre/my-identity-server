@@ -4,29 +4,33 @@
     var version = FileVersionInfo.GetVersionInfo(typeof(IdentityServer4.Hosting.IdentityServerMiddleware).Assembly.Location).ProductVersion.Split('+').First();
 }
 
-<div class="welcome-page">
-    <h1>
-        <img src="~/icon.jpg">
+@section header {
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold leading-tight text-gray-900">
+        <img class="w-14 h-14 inline-block" src="~/icon.jpg">
         Welcome to IdentityServer4
-        <small class="text-muted">(version @version)</small>
-    </h1>
+        <small class="text-gray-400 text-xl">(version @version)</small>
+      </h1>
+    </div>
+  </header>
+}
 
-    <ul>
-        <li>
-            IdentityServer publishes a
-            <a href="~/.well-known/openid-configuration">discovery document</a>
-            where you can find metadata and links to all the endpoints, key material, etc.
-        </li>
-        <li>
-            Click <a href="~/diagnostics">here</a> to see the claims for your current session.
-        </li>
-        <li>
-            Click <a href="~/grants">here</a> to manage your stored grants.
-        </li>
-        <li>
-            Here are links to the
-            <a href="https://github.com/identityserver/IdentityServer4">source code repository</a>,
-            and <a href="https://github.com/IdentityServer/IdentityServer4/tree/main/samples">ready to use samples</a>.
-        </li>
-    </ul>
-</div>
+<ul class="space-y-1 text-sm">
+  <li>
+    IdentityServer publishes a
+    <a class="text-blue-400" href="~/.well-known/openid-configuration">discovery document</a>
+    where you can find metadata and links to all the endpoints, key material, etc.
+  </li>
+  <li>
+    Click <a class="text-blue-400" href="~/diagnostics">here</a> to see the claims for your current session.
+  </li>
+  <li>
+    Click <a class="text-blue-400" href="~/grants">here</a> to manage your stored grants.
+  </li>
+  <li>
+    Here are links to the
+    <a class="text-blue-400" href="https://github.com/identityserver/IdentityServer4">source code repository</a>,
+    and <a class="text-blue-400" href="https://github.com/IdentityServer/IdentityServer4/tree/main/samples">ready to use samples</a>.
+  </li>
+</ul>

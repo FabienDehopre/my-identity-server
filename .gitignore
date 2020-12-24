@@ -257,4 +257,5 @@ tempkey.jwk
 src/MyIdentityServer4/certs/**/*.pem
 
 # Generated TailwindCSS Styles
-src/MyIdentityServer4/wwwroot/css/styles.css
+src/MyIdentityServer4/wwwroot/css/
+src/MyIdentityServer4/wwwroot/js/

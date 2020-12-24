@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "My identity server for all my future projects",
   "scripts": {
-    "build": "postcss ./Styles/Styles.css -o ./wwwroot/css/styles.css"
+    "build": "postcss ./ClientSources/Styles/Styles.css -o ./wwwroot/css/styles.css"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "wwwroot/js",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "es2020",
+    "lib": [ "es2020", "dom" ],
+    "noEmitOnError": true
+  },
+  "include": [ "ClientSources/Scripts/**/*.ts" ],
+  "exclude": [
+    "node_modules",
+    "wwwroot"
+  ]
+}

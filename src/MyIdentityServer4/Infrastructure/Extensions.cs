@@ -1,6 +1,7 @@
-namespace MyIdentityServer4
+namespace MyIdentityServer4.Infrastructure
 {
     using System;
+    using System.Security.Claims;
     using IdentityServer4.Models;
     using Microsoft.AspNetCore.Mvc;
     using MyIdentityServer4.ViewModels;
@@ -22,5 +23,7 @@ namespace MyIdentityServer4
 
             return controller.View(viewName, new RedirectViewModel { RedirectUrl = redirectUri });
         }
+
+        public static string GetEmail(this ClaimsPrincipal user) => user.FindFirstValue(ClaimTypes.Email);
     }
 }

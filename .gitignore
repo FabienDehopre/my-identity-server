@@ -259,3 +259,5 @@ src/MyIdentityServer4/certs/**/*.pem
 # Generated TailwindCSS Styles
 src/MyIdentityServer4/wwwroot/css/
 src/MyIdentityServer4/wwwroot/js/
+!src/MyIdentityServer4/wwwroot/js/signin-redirect.js
+!src/MyIdentityServer4/wwwroot/js/signout-redirect.js

@@ -4,16 +4,23 @@ namespace MyIdentityServer4
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Reflection;
     using System.Security.Claims;
     using System.Security.Cryptography;
+    using System.Text.Encodings.Web;
+    using System.Text.Json;
     using IdentityModel;
     using IdentityServer4;
     using IdentityServer4.EntityFramework.DbContexts;
     using IdentityServer4.EntityFramework.Mappers;
     using IdentityServer4.Services;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.OAuth;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -95,6 +102,62 @@ namespace MyIdentityServer4
                     var settings = this.Configuration.GetSection("Authentication:Microsoft").Get<ExternalAuthentication>();
                     options.ClientId = settings.ClientId;
                     options.ClientSecret = settings.ClientSecret;
+                })
+                .AddOAuth("GitHub", "Github", options =>
+                {
+                    var settings = this.Configuration.GetSection("Authentication:GitHub").Get<ExternalAuthentication>();
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    options.ClientId = settings.ClientId;
+                    options.ClientSecret = settings.ClientSecret;
+                    options.CallbackPath = new PathString("/github-oauth");
+                    options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
+                    options.TokenEndpoint = "https://github.com/login/oauth/access_token";
+                    options.UserInformationEndpoint = "https://api.github.com/user";
+                    options.ClaimsIssuer = "OAuth2-Github";
+                    options.SaveTokens = true;
+                    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "login");
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email", ClaimValueTypes.Email);
+                    options.ClaimActions.MapJsonKey("urn:github:name", "name");
+                    options.ClaimActions.MapJsonKey("urn:github:url", "html_url");
+                    options.ClaimActions.MapJsonKey("urn:github:avatar", "avatar_url");
+                    options.Events = new OAuthEvents
+                    {
+                        OnRemoteFailure = async context =>
+                        {
+                            context.Response.StatusCode = 500;
+                            context.Response.ContentType = "text/html";
+                            await context.Response.WriteAsync("<html><body>");
+                            await context.Response.WriteAsync("A remote failure has occurred:<br>");
+                            await context.Response.WriteAsync(context.Failure.Message.Split(System.Environment.NewLine).Select(s => $"{HtmlEncoder.Default.Encode(s)}<br>").Aggregate((s1, s2) => s1 + s2));
+
+                            if (context.Properties != null)
+                            {
+                                await context.Response.WriteAsync("Properties:<br>");
+                                foreach (var pair in context.Properties.Items)
+                                {
+                                    await context.Response.WriteAsync($"- {HtmlEncoder.Default.Encode(pair.Key)}={HtmlEncoder.Default.Encode(pair.Value)}<br>");
+                                }
+                            }
+
+                            // await context.Response.WriteAsync("<a href=\"/\">Home</a>");
+                            await context.Response.WriteAsync("</body></html>");
+
+                            context.HandleResponse();
+                        },
+                        OnCreatingTicket = async context =>
+                        {
+                            var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
+                            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
+                            var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
+                            response.EnsureSuccessStatusCode();
+                            using (var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync()))
+                            {
+                                context.RunClaimActions(json.RootElement);
+                            }
+                        }
+                    };
                 });
 
             services.AddDatabaseDeveloperPageExceptionFilter();

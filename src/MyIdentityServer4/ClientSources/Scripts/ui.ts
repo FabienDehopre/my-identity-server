@@ -127,17 +127,11 @@ async function toggleMobileUserMenu(event: Event, trigger: Element): Promise<voi
   const closeIcon = $('svg:last-of-type', trigger);
   if (mobileUserMenu.classList.contains('hidden')) {
     mobileUserMenu.classList.remove('hidden');
-    mobileUserMenu.classList.add('block');
-    menuIcon?.classList.remove('block');
     menuIcon?.classList.add('hidden');
     closeIcon?.classList.remove('hidden');
-    closeIcon?.classList.add('block');
   } else {
-    mobileUserMenu.classList.remove('block');
     mobileUserMenu.classList.add('hidden');
     menuIcon?.classList.remove('hidden');
-    menuIcon?.classList.add('block');
-    closeIcon?.classList.remove('block');
     closeIcon?.classList.add('hidden');
   }
 }

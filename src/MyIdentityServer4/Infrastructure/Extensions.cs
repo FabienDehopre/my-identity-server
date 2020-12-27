@@ -1,9 +1,11 @@
 namespace MyIdentityServer4.Infrastructure
 {
     using System;
+    using System.Collections.Generic;
     using System.Security.Claims;
     using IdentityServer4.Models;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
     using MyIdentityServer4.ViewModels;
 
     public static class Extensions
@@ -25,5 +27,16 @@ namespace MyIdentityServer4.Infrastructure
         }
 
         public static string GetEmail(this ClaimsPrincipal user) => user.FindFirstValue(ClaimTypes.Email);
+
+        public static IEnumerable<string> GetErrors(this ModelStateDictionary modelState)
+        {
+            foreach (var pair in modelState)
+            {
+                for (var i = 0; i < pair.Value.Errors.Count; i++)
+                {
+                    yield return pair.Value.Errors[i].ErrorMessage;
+                }
+            }
+        }
     }
 }

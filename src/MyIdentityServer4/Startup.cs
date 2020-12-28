@@ -46,10 +46,17 @@ namespace MyIdentityServer4
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                });
             services.AddDbContext<UserStoreDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("UserStoreConnection")));
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserStoreDbContext>().AddDefaultTokenProviders();
             services.AddTransient<IEventSink, SentryEventSink>();
+            services.Configure<Consent>(this.Configuration.GetSection("Consent"));
+            services.Configure<Account>(this.Configuration.GetSection("Account"));
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var builder = services

@@ -15,7 +15,6 @@ namespace MyIdentityServer4.Controllers
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using MyIdentityServer4.InputModel;
-    using MyIdentityServer4.Options;
     using MyIdentityServer4.ViewModels;
 
     [Authorize]
@@ -26,17 +25,20 @@ namespace MyIdentityServer4.Controllers
         private readonly IEventService events;
         private readonly IOptions<IdentityServerOptions> options;
         private readonly ILogger<DeviceController> logger;
+        private readonly IOptions<Settings.Consent> consentOptions;
 
         public DeviceController(
             IDeviceFlowInteractionService interaction,
             IEventService eventService,
             IOptions<IdentityServerOptions> options,
-            ILogger<DeviceController> logger)
+            ILogger<DeviceController> logger,
+            IOptions<Settings.Consent> consentOptions)
         {
             this.interaction = interaction;
             this.events = eventService;
             this.options = options;
             this.logger = logger;
+            this.consentOptions = consentOptions;
         }
 
         [HttpGet]
@@ -117,7 +119,7 @@ namespace MyIdentityServer4.Controllers
                 if (model.ScopesConsented != null && model.ScopesConsented.Any())
                 {
                     var scopes = model.ScopesConsented;
-                    if (ConsentOptions.EnableOfflineAccess == false)
+                    if (this.consentOptions.Value.EnableOfflineAccess == false)
                     {
                         scopes = scopes.Where(x => x != IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess);
                     }
@@ -134,12 +136,12 @@ namespace MyIdentityServer4.Controllers
                 }
                 else
                 {
-                    result.ValidationError = ConsentOptions.MustChooseOneErrorMessage;
+                    result.ValidationError = "You must pick at least one permission";   // TODO: extract to resources
                 }
             }
             else
             {
-                result.ValidationError = ConsentOptions.InvalidSelectionErrorMessage;
+                result.ValidationError = "Invalid selection";   // TODO: extract to resources
             }
 
             if (grantedConsent != null)
@@ -199,7 +201,7 @@ namespace MyIdentityServer4.Controllers
                     apiScopes.Add(scopeVm);
                 }
             }
-            if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
+            if (this.consentOptions.Value.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
             {
                 apiScopes.Add(this.GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
             }
@@ -232,8 +234,8 @@ namespace MyIdentityServer4.Controllers
         private ScopeViewModel GetOfflineAccessScope(bool check) => new ScopeViewModel
         {
             Value = IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess,
-            DisplayName = ConsentOptions.OfflineAccessDisplayName,
-            Description = ConsentOptions.OfflineAccessDescription,
+            DisplayName = "Offline Access", // TODO: extract to resources
+            Description = "Access to your applications and resources, even when you are offline",   // TODO: extract to resources
             Emphasize = true,
             Checked = check
         };

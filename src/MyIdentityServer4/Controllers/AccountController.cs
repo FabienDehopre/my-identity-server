@@ -10,10 +10,11 @@ namespace MyIdentityServer4.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using MyIdentityServer4.Infrastructure;
     using MyIdentityServer4.InputModel;
     using MyIdentityServer4.Models;
-    using MyIdentityServer4.Options;
+    using MyIdentityServer4.Settings;
     using MyIdentityServer4.ViewModels;
     using System;
     using System.Linq;
@@ -34,6 +35,7 @@ namespace MyIdentityServer4.Controllers
         private readonly IClientStore clientStore;
         private readonly IAuthenticationSchemeProvider schemeProvider;
         private readonly IEventService events;
+        private readonly IOptions<Account> accountOptions;
 
         public AccountController(
             UserManager<User> userManager,
@@ -41,7 +43,8 @@ namespace MyIdentityServer4.Controllers
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
-            IEventService events)
+            IEventService events,
+            IOptions<Account> accountOptions)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -49,6 +52,7 @@ namespace MyIdentityServer4.Controllers
             this.clientStore = clientStore;
             this.schemeProvider = schemeProvider;
             this.events = events;
+            this.accountOptions = accountOptions;
         }
 
         /// <summary>
@@ -144,7 +148,7 @@ namespace MyIdentityServer4.Controllers
                 }
 
                 await this.events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
-                this.ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+                this.ModelState.AddModelError(string.Empty, "Invalid username or password");    // TODO: extract to resources
             }
 
             // something went wrong, show form with error
@@ -264,8 +268,8 @@ namespace MyIdentityServer4.Controllers
 
             return new LoginViewModel
             {
-                AllowRememberLogin = AccountOptions.AllowRememberLogin,
-                EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
+                AllowRememberLogin = this.accountOptions.Value.AllowRememberLogin,
+                EnableLocalLogin = allowLocal && this.accountOptions.Value.AllowLocalLogin,
                 ReturnUrl = returnUrl,
                 Username = context?.LoginHint,
                 ExternalProviders = providers.ToArray()
@@ -282,7 +286,7 @@ namespace MyIdentityServer4.Controllers
 
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId)
         {
-            var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
+            var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = this.accountOptions.Value.ShowLogoutPrompt };
 
             if (this.User?.Identity.IsAuthenticated != true)
             {
@@ -311,7 +315,7 @@ namespace MyIdentityServer4.Controllers
 
             var vm = new LoggedOutViewModel
             {
-                AutomaticRedirectAfterSignOut = AccountOptions.AutomaticRedirectAfterSignOut,
+                AutomaticRedirectAfterSignOut = this.accountOptions.Value.AutomaticRedirectAfterSignOut,
                 PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
                 ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
                 SignOutIframeUrl = logout?.SignOutIFrameUrl,

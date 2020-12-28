@@ -8,7 +8,6 @@ namespace MyIdentityServer4.Controllers
     using IdentityServer4.Stores;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using MyIdentityServer4.Infrastructure;
@@ -238,11 +237,12 @@ namespace MyIdentityServer4.Controllers
             }
 
             var schemes = await this.schemeProvider.GetAllSchemesAsync();
-
+            
             var providers = schemes
                 .Where(x => x.DisplayName != null)
                 .Select(x => new ExternalProvider
                 {
+                    Icon = $"/{x.Name.ToLower()}.svg",
                     DisplayName = x.DisplayName ?? x.Name,
                     AuthenticationScheme = x.Name
                 }).ToList();

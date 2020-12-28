@@ -2,3 +2,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "./Transitions.css";
+
+.external-provider-icon {
+  filter: invert(46%) sepia(6%) saturate(925%) hue-rotate(182deg) brightness(95%) contrast(90%);
+}

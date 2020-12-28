@@ -242,7 +242,7 @@ namespace MyIdentityServer4.Controllers
                 .Where(x => x.DisplayName != null)
                 .Select(x => new ExternalProvider
                 {
-                    Icon = $"/{x.Name.ToLower()}.svg",
+                    Icon = $"/images/{x.Name.ToLower()}.svg",
                     DisplayName = x.DisplayName ?? x.Name,
                     AuthenticationScheme = x.Name
                 }).ToList();

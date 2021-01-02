@@ -8,8 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC479180-B9FD-4DBA-9DFD-247E17A38CDF}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		gen-signing-keys.ps1 = gen-signing-keys.ps1
-		gen-signing-keys.sh = gen-signing-keys.sh
 	EndProjectSection
 EndProject
 Global

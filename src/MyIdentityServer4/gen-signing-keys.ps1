@@ -1,8 +1,8 @@
-﻿Write-Host "Generating signing keys..."
+Write-Host "Generating signing keys..."
 
-$ecKeyFile = "src/MyIdentityServer/certs/ec/3594ab85ad5d4784a5c862fc28e53a6b.pem"
-$psKeyFile = "src/MyIdentityServer/certs/rsa/d327491fa24349389fcf87ea53d2b1d2.pem"
-$rsKeyFile = "src/MyIdentityServer/certs/rsa/e3626be31f7f48eca843ded4abc4cbf1.pem"
+$ecKeyFile = "./certs/ec/3594ab85ad5d4784a5c862fc28e53a6b.pem"
+$psKeyFile = "./certs/rsa/d327491fa24349389fcf87ea53d2b1d2.pem"
+$rsKeyFile = "./certs/rsa/e3626be31f7f48eca843ded4abc4cbf1.pem"
 
 function Split-Key([string] $value, [int] $width)
 {

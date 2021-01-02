@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -39,7 +39,33 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\lib\" />
   </ItemGroup>
+
+  <Target Name="CompileTailwindCSS" AfterTargets="BeforeBuild">
+    <CallTarget Targets="CheckIfNodeJSIsInstalled" />
+    <CallTarget Targets="InstallTailwindCSS" />
+    <Exec Command="npm run build" WorkingDirectory="$(MSBuildThisFileDirectory)" />
+  </Target>
+
+  <Target Name="CheckIfNodeJSIsInstalled">
+    <PropertyGroup>
+      <!-- Send the output to null to keep the log clean -->
+      <NodeTestCommand Condition="$(OS) == Windows_NT">node -v &gt; NUL</NodeTestCommand>
+      <NodeTestCommand Condition="$(OS) != Windows_NT">node -v &gt; /dev/null</NodeTestCommand>
+    </PropertyGroup>
+
+    <Exec Command="$(NodeTestCommand)" IgnoreExitCode="true" EchoOff="true">
+      <Output TaskParameter="ExitCode" PropertyName="ExitCode" />
+    </Exec>
+
+    <Error Text="Node.js must be installed in order to generate tailwind css!" Condition="$(ExitCode) != 0" />
+  </Target>
+
+  <Target Name="InstallTailwindCSS" Condition="!Exists('$(MSBuildThisFileDirectory)node_modules')">
+    <Message Text="Installing required npm packages for TailwindCSS" Importance="high" />
+    <Exec Command="npm install --silent" EchoOff="true" WorkingDirectory="$(MSBuildThisFileDirectory)" />
+  </Target>
 
 </Project>

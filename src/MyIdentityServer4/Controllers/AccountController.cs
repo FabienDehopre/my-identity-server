@@ -230,6 +230,8 @@ namespace MyIdentityServer4.Controllers
                     EnableLocalLogin = local,
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
+                    ClientLogoUrl = context?.Client.LogoUri,
+                    ClientName = context?.Client.ClientName ?? context?.Client.ClientId,
                 };
 
                 if (!local)
@@ -272,7 +274,9 @@ namespace MyIdentityServer4.Controllers
                 EnableLocalLogin = allowLocal && this.accountOptions.Value.AllowLocalLogin,
                 ReturnUrl = returnUrl,
                 Username = context?.LoginHint,
-                ExternalProviders = providers.ToArray()
+                ExternalProviders = providers.ToArray(),
+                ClientLogoUrl = context?.Client.LogoUri,
+                ClientName = context?.Client.ClientName ?? context?.Client.ClientId,
             };
         }
 

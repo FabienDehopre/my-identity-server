@@ -8,6 +8,8 @@ namespace MyIdentityServer4.ViewModels
     {
         public bool AllowRememberLogin { get; set; } = true;
         public bool EnableLocalLogin { get; set; } = true;
+        public string ClientLogoUrl { get; set; } = null;
+        public string ClientName { get; internal set; } = null;
 
         public IEnumerable<ExternalProvider> ExternalProviders { get; set; } = Enumerable.Empty<ExternalProvider>();
         public IEnumerable<ExternalProvider> VisibleExternalProviders => this.ExternalProviders.Where(x => !string.IsNullOrWhiteSpace(x.DisplayName));

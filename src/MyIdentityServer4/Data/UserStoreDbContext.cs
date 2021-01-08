@@ -6,7 +6,7 @@ namespace MyIdentityServer4.Data
 
     public class UserStoreDbContext : IdentityDbContext<User>
     {
-        public UserStoreDbContext(DbContextOptions<UserStoreDbContext> options) 
+        public UserStoreDbContext(DbContextOptions<UserStoreDbContext> options)
             : base(options)
         {
         }

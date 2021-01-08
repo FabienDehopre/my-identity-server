@@ -1,5 +1,6 @@
 namespace MyIdentityServer4.Controllers
 {
+    using System.Threading.Tasks;
     using IdentityServer4.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Hosting;
@@ -7,7 +8,6 @@ namespace MyIdentityServer4.Controllers
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using MyIdentityServer4.ViewModels;
-    using System.Threading.Tasks;
 
     [SecurityHeaders]
     [AllowAnonymous]

@@ -1,8 +1,8 @@
 namespace MyIdentityServer4.ViewModels
 {
-    using MyIdentityServer4.InputModel;
     using System.Collections.Generic;
     using System.Linq;
+    using MyIdentityServer4.InputModel;
 
     public class LoginViewModel : LoginInputModel
     {

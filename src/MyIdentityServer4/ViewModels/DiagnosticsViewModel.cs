@@ -1,10 +1,10 @@
 namespace MyIdentityServer4.ViewModels
 {
+    using System.Collections.Generic;
+    using System.Text;
     using IdentityModel;
     using Microsoft.AspNetCore.Authentication;
     using Newtonsoft.Json;
-    using System.Collections.Generic;
-    using System.Text;
 
     public class DiagnosticsViewModel
     {

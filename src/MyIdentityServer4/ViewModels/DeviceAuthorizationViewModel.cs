@@ -1,4 +1,4 @@
-﻿namespace MyIdentityServer4.ViewModels
+namespace MyIdentityServer4.ViewModels
 {
     public class DeviceAuthorizationViewModel : ConsentViewModel
     {

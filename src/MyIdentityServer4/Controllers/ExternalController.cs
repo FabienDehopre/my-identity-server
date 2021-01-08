@@ -154,7 +154,7 @@ namespace MyIdentityServer4.Controllers
             return this.Redirect(returnUrl);
         }
 
-        private async Task<(User user, string provider, string providerUserId, IEnumerable<Claim> claims)>FindUserFromExternalProviderAsync(AuthenticateResult result)
+        private async Task<(User user, string provider, string providerUserId, IEnumerable<Claim> claims)> FindUserFromExternalProviderAsync(AuthenticateResult result)
         {
             var externalUser = result.Principal;
 

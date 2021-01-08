@@ -1,5 +1,8 @@
 namespace MyIdentityServer4.Controllers
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using IdentityModel;
     using IdentityServer4.Events;
     using IdentityServer4.Extensions;
@@ -16,9 +19,6 @@ namespace MyIdentityServer4.Controllers
     using MyIdentityServer4.Models;
     using MyIdentityServer4.Settings;
     using MyIdentityServer4.ViewModels;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// This sample controller implements a typical login/logout/provision workflow for local and external accounts.
@@ -243,7 +243,7 @@ namespace MyIdentityServer4.Controllers
             }
 
             var schemes = await this.schemeProvider.GetAllSchemesAsync();
-            
+
             var providers = schemes
                 .Where(x => x.DisplayName != null)
                 .Select(x => new ExternalProvider

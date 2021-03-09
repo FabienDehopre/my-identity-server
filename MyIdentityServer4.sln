@@ -16,9 +16,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{209078F7-A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SSO", "SSO", "{0E92544C-AF95-489C-93B5-D7C8DA2CDB83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dehopre.Domain.Core", "src\Core\Dehopre.Domain.Core\Dehopre.Domain.Core.csproj", "{07CEFF81-8403-4499-97B0-3F39C3F42114}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dehopre.Domain.Core", "src\Core\Dehopre.Domain.Core\Dehopre.Domain.Core.csproj", "{07CEFF81-8403-4499-97B0-3F39C3F42114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dehopre.AspNetCore.IQueryable.Extensions", "src\Core\Dehopre.AspNetCore.IQueryable.Extensions\Dehopre.AspNetCore.IQueryable.Extensions.csproj", "{863B563D-BD9E-4489-94C8-F042AC953834}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dehopre.AspNetCore.IQueryable.Extensions", "src\Core\Dehopre.AspNetCore.IQueryable.Extensions\Dehopre.AspNetCore.IQueryable.Extensions.csproj", "{863B563D-BD9E-4489-94C8-F042AC953834}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dehopre.AspNetCore", "src\Core\Dehopre.AspNetCore\Dehopre.AspNetCore.csproj", "{A3B6954B-1111-46F3-9F94-0271D6D0C84D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{863B563D-BD9E-4489-94C8-F042AC953834}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{863B563D-BD9E-4489-94C8-F042AC953834}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{863B563D-BD9E-4489-94C8-F042AC953834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B6954B-1111-46F3-9F94-0271D6D0C84D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B6954B-1111-46F3-9F94-0271D6D0C84D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B6954B-1111-46F3-9F94-0271D6D0C84D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B6954B-1111-46F3-9F94-0271D6D0C84D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,6 +51,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{07CEFF81-8403-4499-97B0-3F39C3F42114} = {209078F7-A321-48B1-B6BA-C3A34DF045B3}
 		{863B563D-BD9E-4489-94C8-F042AC953834} = {209078F7-A321-48B1-B6BA-C3A34DF045B3}
+		{A3B6954B-1111-46F3-9F94-0271D6D0C84D} = {209078F7-A321-48B1-B6BA-C3A34DF045B3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D83CAC55-86BD-46E4-982C-289FC3AA20FA}

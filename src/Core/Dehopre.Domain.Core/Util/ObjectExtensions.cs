@@ -4,6 +4,7 @@ namespace Dehopre.Domain.Core.Util
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Text.Json;
 
     /// <summary>
     /// Non-generic class allowing properties to be copied from one instance
@@ -25,6 +26,10 @@ namespace Dehopre.Domain.Core.Util
         public static void ShallowCopyTo<TSource, TTarget>(this TSource source, TTarget target)
             where TSource : class
             where TTarget : class => PropertyCopier<TSource, TTarget>.Copy(source, target);
+
+        public static string ToJson<T>(this T value, JsonSerializerOptions options = null) => JsonSerializer.Serialize<T>(value, options);
+
+        public static T FromJson<T>(this string json, JsonSerializerOptions options = null) => JsonSerializer.Deserialize<T>(json, options);
     }
 
     /// <summary>

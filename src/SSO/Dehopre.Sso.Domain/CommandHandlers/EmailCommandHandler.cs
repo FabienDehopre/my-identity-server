@@ -93,7 +93,7 @@ namespace Dehopre.Sso.Domain.CommandHandlers
                 return false;
             }
 
-            var email = await this.emailRepository.GetByType(request.Type, TODO);
+            var email = await this.emailRepository.GetByType(request.Type, cancellationToken);
             if (email == null)
             {
                 email = request.ToModel();

@@ -17,7 +17,7 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Sort
             foreach (var sortTerm in fields.Fields())
             {
                 var property = PrimitiveExtensions.GetProperty<TEntity>(sortTerm.FieldName());
-                if (property != null)
+                if (property is not null)
                 {
                     var command = useThenBy ? "ThenBy" : "OrderBy";
                     command += sortTerm.IsDescending() ? "Descending" : string.Empty;

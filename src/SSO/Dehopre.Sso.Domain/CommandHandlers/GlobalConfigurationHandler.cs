@@ -28,7 +28,7 @@ namespace Dehopre.Sso.Domain.CommandHandlers
         {
             if (!request.IsValid())
             {
-                this.NotifyValidationErrors(request);
+                await this.NotifyValidationErrors(request, cancellationToken);
                 return false;
             }
 

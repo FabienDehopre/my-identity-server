@@ -17,7 +17,7 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Filter
             foreach (var propertyInfo in type.GetProperties())
             {
                 var criteria = GetCriteria(model, propertyInfo);
-                if (criteria == null)
+                if (criteria is null)
                 {
                     continue;
                 }
@@ -39,7 +39,7 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Filter
                     FiterBy = GetClosureOverContains(criteria.Property.GetValue(model, null), GetNonNullable(criteria.Property.PropertyType)),
                     Criteria = criteria
                 };
-                if (criteria.Property.GetValue(model, null) != null)
+                if (criteria.Property.GetValue(model, null) is not null)
                 {
                     expressions.Add(expressionData);
                 }
@@ -74,7 +74,7 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Filter
             }
 
             var customValue = propertyInfo.GetValue(model, null);
-            if (customValue == null)
+            if (customValue is null)
             {
                 return null;
             }
@@ -119,7 +119,7 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Filter
                 }
 
                 var customValue = propertyInfo.GetValue(searchModel, null);
-                if (customValue == null)
+                if (customValue is null)
                 {
                     continue;
                 }

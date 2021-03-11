@@ -80,7 +80,7 @@ namespace Dehopre.Domain.Core.Util
             return count;
         }
 
-        public static bool HasTrailingSlash(this string url) => url != null && url.EndsWith("/");
+        public static bool HasTrailingSlash(this string url) => url is not null && url.EndsWith("/");
 
 
         public static string TruncateSensitiveInformation(this string part) => part.AsSpan().TruncateSensitiveInformation();

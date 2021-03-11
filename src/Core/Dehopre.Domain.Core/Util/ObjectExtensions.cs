@@ -76,12 +76,12 @@ namespace Dehopre.Domain.Core.Util
 
         internal static TTarget Copy(TSource source)
         {
-            if (InitializationException != null)
+            if (InitializationException is not null)
             {
                 throw InitializationException;
             }
 
-            if (source == null)
+            if (source is null)
             {
                 throw new ArgumentNullException("source");
             }
@@ -91,12 +91,12 @@ namespace Dehopre.Domain.Core.Util
 
         internal static void Copy(TSource source, TTarget target)
         {
-            if (InitializationException != null)
+            if (InitializationException is not null)
             {
                 throw InitializationException;
             }
 
-            if (source == null)
+            if (source is null)
             {
                 throw new ArgumentNullException("source");
             }
@@ -134,7 +134,7 @@ namespace Dehopre.Domain.Core.Util
                 }
 
                 var targetProperty = typeof(TTarget).GetProperty(sourceProperty.Name);
-                if (targetProperty == null)
+                if (targetProperty is null)
                 {
                     throw new ArgumentException("Property " + sourceProperty.Name + " is not present and accessible in " + typeof(TTarget).FullName);
                 }

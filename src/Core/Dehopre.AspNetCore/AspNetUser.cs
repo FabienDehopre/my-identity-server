@@ -55,12 +55,7 @@ namespace Dehopre.AspNetCore
             }
 
             var sub = this.accessor.HttpContext.User.FindFirst(JwtClaimTypes.Subject);
-            if (sub != null)
-            {
-                return sub.Value;
-            }
-
-            return string.Empty;
+            return sub?.Value ?? string.Empty;
         }
     }
 }

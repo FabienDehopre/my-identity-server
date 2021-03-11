@@ -12,7 +12,11 @@ namespace Dehopre.Sso.Domain.CommandHandlers
     using Dehopre.Sso.Domain.Interfaces;
     using MediatR;
 
-    public class EmailCommandHandler : CommandHandler, IRequestHandler<SaveTemplateCommand, bool>, IRequestHandler<UpdateTemplateCommand, bool>, IRequestHandler<SaveEmailCommand, bool>, IRequestHandler<RemoveTemplateCommand, bool>
+    public class EmailCommandHandler : CommandHandler,
+        IRequestHandler<SaveTemplateCommand, bool>,
+        IRequestHandler<UpdateTemplateCommand, bool>,
+        IRequestHandler<SaveEmailCommand, bool>,
+        IRequestHandler<RemoveTemplateCommand, bool>
     {
         private readonly ITemplateRepository templateRepository;
         private readonly IEmailRepository emailRepository;
@@ -32,7 +36,7 @@ namespace Dehopre.Sso.Domain.CommandHandlers
         {
             if (!request.IsValid())
             {
-                this.NotifyValidationErrors(request);
+                await this.NotifyValidationErrors(request, cancellationToken);
                 return false;
             }
 
@@ -58,7 +62,7 @@ namespace Dehopre.Sso.Domain.CommandHandlers
         {
             if (!request.IsValid())
             {
-                this.NotifyValidationErrors(request);
+                await this.NotifyValidationErrors(request, cancellationToken);
                 return false;
             }
 
@@ -85,11 +89,11 @@ namespace Dehopre.Sso.Domain.CommandHandlers
         {
             if (!request.IsValid())
             {
-                this.NotifyValidationErrors(request);
+                await this.NotifyValidationErrors(request, cancellationToken);
                 return false;
             }
 
-            var email = await this.emailRepository.GetByType(request.Type);
+            var email = await this.emailRepository.GetByType(request.Type, TODO);
             if (email == null)
             {
                 email = request.ToModel();
@@ -114,7 +118,7 @@ namespace Dehopre.Sso.Domain.CommandHandlers
         {
             if (!request.IsValid())
             {
-                this.NotifyValidationErrors(request);
+                await this.NotifyValidationErrors(request, cancellationToken);
                 return false;
             }
 

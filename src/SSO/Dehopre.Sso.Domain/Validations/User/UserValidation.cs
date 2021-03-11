@@ -8,13 +8,13 @@ namespace Dehopre.Sso.Domain.Validations.User
         protected void ValidateName() => this.RuleFor(c => c.Name)
                 .NotEmpty().WithMessage("Please ensure you have entered the Username")
                 .Length(2, 150).WithMessage("The Username must have between 2 and 150 characters")
-                .When(w => w.Name != null);
+                .When(w => w.Name is not null);
 
 
         protected void ValidateEmail() => this.RuleFor(c => c.Email)
                 .NotEmpty()
                 .EmailAddress()
-                .When(w => w.Email != null);
+                .When(w => w.Email is not null);
 
         protected void ValidateUsername() => this.RuleFor(c => c.Username)
                 .NotEmpty().WithMessage("Please ensure you have entered the Username")

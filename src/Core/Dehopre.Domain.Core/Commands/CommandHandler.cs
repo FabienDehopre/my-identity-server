@@ -21,11 +21,11 @@ namespace Dehopre.Domain.Core.Commands
             this.Bus = bus;
         }
 
-        protected void NotifyValidationErrors(Command message)
+        protected async Task NotifyValidationErrors(Command message, CancellationToken cancellationToken = default)
         {
             foreach (var error in message.ValidationResult.Errors)
             {
-                _ = this.Bus.RaiseEvent(new DomainNotification(message.MessageType, error.ErrorMessage));
+                await this.Bus.RaiseEvent(new DomainNotification(message.MessageType, error.ErrorMessage), cancellationToken);
             }
         }
 

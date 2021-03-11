@@ -9,18 +9,18 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Filter
     {
         public static IQueryable<TEntity> Filter<TEntity>(this IQueryable<TEntity> result, ICustomQueryable model)
         {
-            if (model == null)
+            if (model is null)
             {
                 return result;
             }
 
             var lastExpression = result.FilterExpression(model);
-            return lastExpression == null ? result : result.Where(lastExpression);
+            return lastExpression is null ? result : result.Where(lastExpression);
         }
 
         public static Expression<Func<TEntity, bool>> FilterExpression<TEntity>(this IQueryable<TEntity> _, ICustomQueryable model)
         {
-            if (model == null)
+            if (model is null)
             {
                 return null;
             }
@@ -41,7 +41,7 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Filter
                     actualExpression = Expression.Not(actualExpression);
                 }
 
-                if (lastExpression == null)
+                if (lastExpression is null)
                 {
                     lastExpression = actualExpression;
                 }
@@ -51,7 +51,7 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Filter
                 }
             }
 
-            return lastExpression != null ? Expression.Lambda<Func<TEntity, bool>>(lastExpression, operations.ParameterExpression) : null;
+            return lastExpression is not null ? Expression.Lambda<Func<TEntity, bool>>(lastExpression, operations.ParameterExpression) : null;
         }
 
         private static Expression GetExpression<TEntity>(ExpressionParser expression)

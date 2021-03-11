@@ -38,12 +38,12 @@ namespace Dehopre.Sso.Domain.Models
             this.Subject = request.Subject;
             this.Content = request.Content;
 
-            if (request.Bcc != null && request.Bcc.IsValid())
+            if (request.Bcc is not null && request.Bcc.IsValid())
             {
                 this.Bcc = request.Bcc;
             }
 
-            if (request.Sender != null && request.Sender.IsValid())
+            if (request.Sender is not null && request.Sender.IsValid())
             {
                 this.Sender = request.Sender;
             }

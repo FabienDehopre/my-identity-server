@@ -198,7 +198,7 @@ namespace MyIdentityServer4.Controllers
                 AllowRememberConsent = request.Client.AllowRememberConsent
             };
 
-            vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => this.CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
+            vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
 
             var apiScopes = new List<ScopeViewModel>();
             foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
@@ -212,14 +212,14 @@ namespace MyIdentityServer4.Controllers
             }
             if (this.consentOptions.Value.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
             {
-                apiScopes.Add(this.GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
+                apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
             }
             vm.ApiScopes = apiScopes;
 
             return vm;
         }
 
-        private ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check) => new ScopeViewModel
+        private static ScopeViewModel CreateScopeViewModel(IdentityResource identity, bool check) => new()
         {
             Value = identity.Name,
             DisplayName = identity.DisplayName ?? identity.Name,
@@ -248,7 +248,7 @@ namespace MyIdentityServer4.Controllers
             };
         }
 
-        private ScopeViewModel GetOfflineAccessScope(bool check) => new ScopeViewModel
+        private static ScopeViewModel GetOfflineAccessScope(bool check) => new()
         {
             Value = IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess,
             DisplayName = "Offline Access", // TODO: extract to resources

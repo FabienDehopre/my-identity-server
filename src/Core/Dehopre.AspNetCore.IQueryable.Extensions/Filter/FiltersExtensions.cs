@@ -54,30 +54,18 @@ namespace Dehopre.AspNetCore.IQueryable.Extensions.Filter
             return lastExpression is not null ? Expression.Lambda<Func<TEntity, bool>>(lastExpression, operations.ParameterExpression) : null;
         }
 
-        private static Expression GetExpression<TEntity>(ExpressionParser expression)
+        private static Expression GetExpression<TEntity>(ExpressionParser expression) => expression.Criteria.Operator switch
         {
-            switch (expression.Criteria.Operator)
-            {
-                case WhereOperator.Equals:
-                    return Expression.Equal(expression.FieldToFilter, expression.FiterBy);
-                case WhereOperator.NotEquals:
-                    return Expression.NotEqual(expression.FieldToFilter, expression.FiterBy);
-                case WhereOperator.GreaterThan:
-                    return Expression.GreaterThan(expression.FieldToFilter, expression.FiterBy);
-                case WhereOperator.LessThan:
-                    return Expression.LessThan(expression.FieldToFilter, expression.FiterBy);
-                case WhereOperator.GreaterThanOrEqualTo:
-                    return Expression.GreaterThanOrEqual(expression.FieldToFilter, expression.FiterBy);
-                case WhereOperator.LessThanOrEqualTo:
-                    return Expression.LessThanOrEqual(expression.FieldToFilter, expression.FiterBy);
-                case WhereOperator.Contains:
-                    return ContainsExpression<TEntity>(expression);
-                case WhereOperator.StartsWith:
-                    return Expression.Call(expression.FieldToFilter, typeof(string).GetMethods().First(m => m.Name == "StartsWith" && m.GetParameters().Length == 1), expression.FiterBy);
-                default:
-                    return Expression.Equal(expression.FieldToFilter, expression.FiterBy);
-            }
-        }
+            WhereOperator.Equals => Expression.Equal(expression.FieldToFilter, expression.FiterBy),
+            WhereOperator.NotEquals => Expression.NotEqual(expression.FieldToFilter, expression.FiterBy),
+            WhereOperator.GreaterThan => Expression.GreaterThan(expression.FieldToFilter, expression.FiterBy),
+            WhereOperator.LessThan => Expression.LessThan(expression.FieldToFilter, expression.FiterBy),
+            WhereOperator.GreaterThanOrEqualTo => Expression.GreaterThanOrEqual(expression.FieldToFilter, expression.FiterBy),
+            WhereOperator.LessThanOrEqualTo => Expression.LessThanOrEqual(expression.FieldToFilter, expression.FiterBy),
+            WhereOperator.Contains => ContainsExpression<TEntity>(expression),
+            WhereOperator.StartsWith => Expression.Call(expression.FieldToFilter, typeof(string).GetMethods().First(m => m.Name == "StartsWith" && m.GetParameters().Length == 1), expression.FiterBy),
+            _ => Expression.Equal(expression.FieldToFilter, expression.FiterBy),
+        };
 
         private static Expression ContainsExpression<TEntity>(ExpressionParser expression)
         {

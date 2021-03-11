@@ -140,7 +140,7 @@ namespace Dehopre.Sso.Domain.CommandHandlers
                 return false;
             }
 
-            var accountResult = await this.userService.GenerateResetPasswordLink(request.EmailOrUsername);
+            var accountResult = await this.userService.GenerateResetPasswordLink(request.EmailOrUsername, cancellationToken);
             if (accountResult.HasValue)
             {
                 var user = await this.userService.FindByNameAsync(request.Username, cancellationToken);

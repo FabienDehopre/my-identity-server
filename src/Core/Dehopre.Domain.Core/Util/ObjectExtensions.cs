@@ -83,7 +83,7 @@ namespace Dehopre.Domain.Core.Util
 
             if (source is null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             return Creator(source);
@@ -98,7 +98,7 @@ namespace Dehopre.Domain.Core.Util
 
             if (source is null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             for (var i = 0; i < SourceProperties.Count; i++)

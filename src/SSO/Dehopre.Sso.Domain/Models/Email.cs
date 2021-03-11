@@ -55,11 +55,11 @@ namespace Dehopre.Sso.Domain.Models
         public EmailMessage GetMessage(IDomainUser user, AccountResult created, UserCommand command, IEnumerable<Claim> claims) => new(
                 user.Email,
                 this.Bcc,
-                this.GetFormatedContent(this.Subject, user, created, command, claims),
-                this.GetFormatedContent(this.Content, user, created, command, claims),
+                GetFormatedContent(this.Subject, user, created, command, claims),
+                GetFormatedContent(this.Content, user, created, command, claims),
                 this.Sender);
 
-        private string GetFormatedContent(string content, IDomainUser user, AccountResult created, UserCommand command, IEnumerable<Claim> claims)
+        private static string GetFormatedContent(string content, IDomainUser user, AccountResult created, UserCommand command, IEnumerable<Claim> claims)
         {
             if (content is null)
             {

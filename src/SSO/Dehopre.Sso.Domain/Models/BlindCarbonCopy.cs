@@ -19,7 +19,7 @@ namespace Dehopre.Sso.Domain.Models
 
         public bool IsValid() => this.Recipients is not null && this.Recipients.Any() && this.Recipients.All(a => a.IsEmail());
 
-        public static implicit operator BlindCarbonCopy(string value) => new BlindCarbonCopy(value);
+        public static implicit operator BlindCarbonCopy(string value) => new(value);
 
         public override string ToString() => this.recipientsCollection;
     }

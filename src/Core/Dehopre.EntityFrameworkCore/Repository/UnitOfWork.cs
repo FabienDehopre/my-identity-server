@@ -1,6 +1,7 @@
 namespace Dehopre.EntityFrameworkCore.Repository
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Dehopre.Domain.Core.Interfaces;
     using Dehopre.EntityFrameworkCore.Interfaces;
@@ -16,12 +17,12 @@ namespace Dehopre.EntityFrameworkCore.Repository
             this.eventStoreContext = eventStoreContext ?? throw new ArgumentNullException(nameof(eventStoreContext));
         }
 
-        public async Task<bool> Commit()
+        public async Task<bool> Commit(CancellationToken cancellationToken = default)
         {
-            var linesModified = await this.context.SaveChangesAsync();
+            var linesModified = await this.context.SaveChangesAsync(cancellationToken);
             if (this.eventStoreContext.GetType() != this.context.GetType())
             {
-                await this.eventStoreContext.SaveChangesAsync();
+                await this.eventStoreContext.SaveChangesAsync(cancellationToken);
             }
 
             return linesModified > 0;

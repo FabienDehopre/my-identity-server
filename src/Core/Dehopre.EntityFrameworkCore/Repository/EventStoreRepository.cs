@@ -4,7 +4,7 @@ namespace Dehopre.EntityFrameworkCore.Repository
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Dehopre.Domain.Core.Events;
     using Dehopre.Domain.Core.Interfaces;
@@ -21,9 +21,9 @@ namespace Dehopre.EntityFrameworkCore.Repository
 
         public IQueryable<StoredEvent> All() => this.context.StoredEvent.Include(s => s.Details);
 
-        public async Task<List<StoredEvent>> GetEvents(string username, PagingViewModel paging)
+        public async Task<List<StoredEvent>> GetEvents(string username, PagingViewModel paging, CancellationToken cancellationToken = default)
         {
-            List<StoredEvent> events = null;
+            List<StoredEvent> events;
             if (paging.Search.IsPresent())
             {
                 events = await this.context.StoredEvent
@@ -31,7 +31,8 @@ namespace Dehopre.EntityFrameworkCore.Repository
                                     .Where(EventFind(username, paging.Search))
                                     .OrderByDescending(o => o.Timestamp)
                                     .Skip(paging.Offset)
-                                    .Take(paging.Limit).ToListAsync();
+                                    .Take(paging.Limit)
+                                    .ToListAsync(cancellationToken);
             }
             else
             {
@@ -40,7 +41,8 @@ namespace Dehopre.EntityFrameworkCore.Repository
                                     .Where(w => w.User == username)
                                     .Skip(paging.Offset)
                                     .OrderByDescending(o => o.Timestamp)
-                                    .Take(paging.Limit).ToListAsync();
+                                    .Take(paging.Limit)
+                                    .ToListAsync(cancellationToken);
             }
 
             return events;
@@ -51,12 +53,12 @@ namespace Dehopre.EntityFrameworkCore.Repository
                                                                                                                               w.AggregateId.Contains(search)) &&
                                                                                                                               w.User == username;
 
-        public Task<int> Count(string username, string search) => search.IsPresent() ? this.context.StoredEvent.Where(EventFind(username, search)).CountAsync() : this.context.StoredEvent.Where(w => w.User == username).CountAsync();
+        public Task<int> Count(string username, string search, CancellationToken cancellationToken = default) => search.IsPresent() ? this.context.StoredEvent.Where(EventFind(username, search)).CountAsync(cancellationToken) : this.context.StoredEvent.Where(w => w.User == username).CountAsync(cancellationToken);
 
-        public async Task Store(StoredEvent theEvent)
+        public async Task Store(StoredEvent theEvent, CancellationToken cancellationToken = default)
         {
-            await this.context.StoredEvent.AddAsync(theEvent);
-            await this.context.SaveChangesAsync();
+            await this.context.StoredEvent.AddAsync(theEvent, cancellationToken);
+            await this.context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose() => this.context.Dispose();

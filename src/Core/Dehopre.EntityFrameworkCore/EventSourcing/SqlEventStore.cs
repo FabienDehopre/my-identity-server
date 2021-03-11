@@ -1,6 +1,7 @@
 namespace Dehopre.EntityFrameworkCore.EventSourcing
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Dehopre.Domain.Core.Events;
     using Dehopre.Domain.Core.Interfaces;
@@ -17,7 +18,7 @@ namespace Dehopre.EntityFrameworkCore.EventSourcing
             this.systemUser = systemUser ?? throw new ArgumentNullException(nameof(systemUser));
         }
 
-        public Task Save<T>(T theEvent) where T : Event
+        public Task Save<T>(T theEvent, CancellationToken cancellationToken = default) where T : Event
         {
             var serializedData = theEvent.ToJson();
             if (theEvent.Message.IsMissing())
@@ -28,7 +29,7 @@ namespace Dehopre.EntityFrameworkCore.EventSourcing
             var storedEvent = new StoredEvent(theEvent.MessageType, theEvent.EventType, theEvent.Message, this.systemUser.GetLocalIpAddress(), this.systemUser.GetRemoteIpAddress(), serializedData)
                 .SetUser(this.systemUser.Username)
                 .SetAggregate(theEvent.AggregateId);
-            return this.eventStoreRepository.Store(storedEvent);
+            return this.eventStoreRepository.Store(storedEvent, cancellationToken);
         }
     }
 }

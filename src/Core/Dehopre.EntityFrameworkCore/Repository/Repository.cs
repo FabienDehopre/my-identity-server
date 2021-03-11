@@ -23,13 +23,13 @@ namespace Dehopre.EntityFrameworkCore.Repository
             this.DbSet = this.Db.Set<TEntity>();
         }
 
-        public virtual void Add(TEntity obj) => _ = this.DbSet.Add(obj);
+        public virtual void Add(TEntity obj) => this.DbSet.Add(obj);
 
-        public virtual void Update(TEntity obj) => _ = this.DbSet.Update(obj);
+        public virtual void Update(TEntity obj) => this.DbSet.Update(obj);
 
-        public virtual void Remove<T>(T id) => _ = this.DbSet.Remove(this.DbSet.Find(id));
+        public virtual void Remove<T>(T id) => this.DbSet.Remove(this.DbSet.Find(id));
 
-        public void Remove(TEntity obj) => _ = this.DbSet.Remove(obj);
+        public void Remove(TEntity obj) => this.DbSet.Remove(obj);
 
         public void Dispose()
         {

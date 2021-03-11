@@ -57,10 +57,14 @@ namespace Dehopre.EntityFrameworkCore.Repository
 
         public async Task Store(StoredEvent theEvent, CancellationToken cancellationToken = default)
         {
-            await this.context.StoredEvent.AddAsync(theEvent, cancellationToken);
-            await this.context.SaveChangesAsync(cancellationToken);
+            _ = await this.context.StoredEvent.AddAsync(theEvent, cancellationToken);
+            _ = await this.context.SaveChangesAsync(cancellationToken);
         }
 
-        public void Dispose() => this.context.Dispose();
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            this.context.Dispose();
+        }
     }
 }

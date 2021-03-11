@@ -22,7 +22,7 @@ namespace Dehopre.EntityFrameworkCore.Repository
             var linesModified = await this.context.SaveChangesAsync(cancellationToken);
             if (this.eventStoreContext.GetType() != this.context.GetType())
             {
-                await this.eventStoreContext.SaveChangesAsync(cancellationToken);
+                _ = await this.eventStoreContext.SaveChangesAsync(cancellationToken);
             }
 
             return linesModified > 0;
@@ -30,6 +30,7 @@ namespace Dehopre.EntityFrameworkCore.Repository
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             this.context.Dispose();
             this.eventStoreContext.Dispose();
         }

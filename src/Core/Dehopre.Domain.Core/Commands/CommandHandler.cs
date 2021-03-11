@@ -25,7 +25,7 @@ namespace Dehopre.Domain.Core.Commands
         {
             foreach (var error in message.ValidationResult.Errors)
             {
-                this.Bus.RaiseEvent(new DomainNotification(message.MessageType, error.ErrorMessage));
+                _ = this.Bus.RaiseEvent(new DomainNotification(message.MessageType, error.ErrorMessage));
             }
         }
 

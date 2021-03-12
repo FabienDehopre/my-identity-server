@@ -32,7 +32,7 @@ namespace Dehopre.Sso.Domain.CommandHandlers
                 return false;
             }
 
-            var settings = await this.globalConfigurationSettingsRepository.FindByKey(request.Key);
+            var settings = await this.globalConfigurationSettingsRepository.FindByKey(request.Key, cancellationToken);
             if (settings is null)
             {
                 return await this.CreateConfiguration(request, cancellationToken);

@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dehopre.Sso.EntityFramework
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dehopre.Sso.AspNetIdentity", "src\SSO\Dehopre.Sso.AspNetIdentity\Dehopre.Sso.AspNetIdentity.csproj", "{43E961BD-104D-420B-8FDF-84FDC3993925}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dehopre.Sso.Application", "src\SSO\Dehopre.Sso.Application\Dehopre.Sso.Application.csproj", "{6D29D10D-8E19-49CE-ACC9-24FD98A8BC87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{43E961BD-104D-420B-8FDF-84FDC3993925}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43E961BD-104D-420B-8FDF-84FDC3993925}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43E961BD-104D-420B-8FDF-84FDC3993925}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D29D10D-8E19-49CE-ACC9-24FD98A8BC87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D29D10D-8E19-49CE-ACC9-24FD98A8BC87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D29D10D-8E19-49CE-ACC9-24FD98A8BC87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D29D10D-8E19-49CE-ACC9-24FD98A8BC87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +86,7 @@ Global
 		{817FE173-933C-4269-B196-054DF5CA7860} = {0E92544C-AF95-489C-93B5-D7C8DA2CDB83}
 		{06C34DF2-60BC-43A2-A7C0-1FBBF174E24B} = {0E92544C-AF95-489C-93B5-D7C8DA2CDB83}
 		{43E961BD-104D-420B-8FDF-84FDC3993925} = {0E92544C-AF95-489C-93B5-D7C8DA2CDB83}
+		{6D29D10D-8E19-49CE-ACC9-24FD98A8BC87} = {0E92544C-AF95-489C-93B5-D7C8DA2CDB83}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D83CAC55-86BD-46E4-982C-289FC3AA20FA}
